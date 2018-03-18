@@ -6,4 +6,4 @@
 
 
 **** Usage ****
-1. run project.py with sudo permissions
+1. run benchmarker.py with sudo permissions

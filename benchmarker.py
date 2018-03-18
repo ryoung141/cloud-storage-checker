@@ -15,7 +15,7 @@ class Benchmarker(object):
 	#5MB, 20MB, 50MB file sizes
 	GOOGLE_TARGETS = ["/uc?export=download&id=1qrdr2duyO7icb-XTRDJ_Qx9cZWg05jEu", "/uc?export=download&id=1iTq9a-g4G3lc56cD0WceNnS3WWq98spO", "/uc?export=download&id=1gS1Z-92XN_cVm5nU0pEJoV4JZRQwngUQ"]
 
-	DROPBOX_TARGETS
+	DROPBOX_TARGETS = ["/s/qxivhtkx2ozub5y/5MB%20%281%29.zip?dl=1", "/s/wy3t49dd4rwglm0/20MB%20%282%29.zip?dl=1", "/s/sbh8fti3s8x16px/50MB.zip?dl=1"]
 
 	PORT = 33445 
 	MAX_HOPS =  30
@@ -54,6 +54,7 @@ class Benchmarker(object):
 			for _iter in range(self.iterations):
 				r = requests.get("http://" + self.host + "/download.php?f="+str(target))
 				total_dl += len(r.content)
+				print total_dl
 
 		total_time = (time.time() - start)
 
@@ -61,16 +62,15 @@ class Benchmarker(object):
 		return total_dl / (1000000.0 * total_time) #B/s --> MB/s
 
 	def customDownload(self, path_list):
-		# connections = [self.connect(self.host) for x in range(self.iterations)]
 
 		total_dl = 0
 		start = time.time()
 		for target in path_list:
 			print("http://" + self.host + str(target))
 			for _iter in range(self.iterations):
-				# connections[_iter].request('GET', self.host + str(target), None, {'Connection': 'Keep-Alive'})
 				r = requests.get("http://"+self.host + str(target))
 				total_dl += len(r.content)
+				print total_dl
 
 		total_time = (time.time() - start)
 
@@ -126,34 +126,62 @@ class Benchmarker(object):
 
 			if current == destination:
 				rtt_end = time.time() - rtt
-				return ttl, rtt * 1000
 			if ttl >= Benchmarker.MAX_HOPS:
 				print("Max Hop count reached, terminating...")
 				print("Last hop attempted: \n" + current_host)
-				return
+				return ttl
 			ttl += 1	
 
-	def amazonTest():
+	def amazonTest(self):
+		print "NOW RUNNING AMAZON TEST SUITE\n"
 		dl_speed = self.download()
-		hop_count, rtt = self.get_rtt_hops()
+		hop_count = 0
+		for _iter in range(self.iterations):
+			hop_count += self.get_rtt_hops()
+		hop_count = hop_count / self.iterations
 		ratio = dl_speed / hop_count
 		return ratio
 
-	def googleTest():
+	def googleTest(self):
+		print "NOW RUNNING GOOGLE DRIVE TEST SUITE\n"
 		dl_speed = self.customDownload(Benchmarker.GOOGLE_TARGETS)
-		hop_count, rtt = self.get_rtt_hops()
+		hop_count = 0
+		for _iter in range(self.iterations):
+			hop_count += self.get_rtt_hops()
+		hop_count = hop_count / self.iterations
+		ratio = dl_speed / hop_count
+		return ratio
+
+	def dropboxTest(self):
+		print "NOW RUNNING DROPBOX TEST SUITE\n"
+		dl_speed = self.customDownload(Benchmarker.DROPBOX_TARGETS)
+		hop_count = 0
+		for _iter in range(self.iterations):
+			hop_count += self.get_rtt_hops()
+		hop_count = hop_count / self.iterations
 		ratio = dl_speed / hop_count
 		return ratio
 
 
 
 def main():
-	b1 = Benchmarker(3)
-	b2 = Benchmarker(3, "drive.google.com")
-	b3 = Benchmarker(3, "dropbox.com")
+	b1 = Benchmarker(1)
+	b2 = Benchmarker(1, "drive.google.com")
+	b3 = Benchmarker(1, "dropbox.com")
+
 	a = b1.amazonTest()
 	g = b2.googleTest()
 	d = b3.dropboxTest()
+
+	arr = {'Amazon': a, 'Google Drive': g, 'Dropbox': d}
+	arr = sorted(arr.items(), key=lambda x: x[1], reverse=True)
+	i=1
+	for tup in arr:
+		key = [x[0] for x in arr]
+		val = [x[1] for x in arr]
+		print str(key) + " had CQuality factor of: " + str(val)
+		print "Rank: " + str(i)
+		i+=1
 	# if len(sys.argv) > 1:
 	# 	try:
 	# 		b = Benchmarker(2)
@@ -171,10 +199,10 @@ def main():
 	# 	except Exception as e:
 	# 		print(e)
 			# 5MB                                                         20 MB                                                         50 MB
-	list = ["/uc?export=download&id=1qrdr2duyO7icb-XTRDJ_Qx9cZWg05jEu", "/uc?export=download&id=1iTq9a-g4G3lc56cD0WceNnS3WWq98spO", "/uc?export=download&id=1gS1Z-92XN_cVm5nU0pEJoV4JZRQwngUQ"]
-	b = Benchmarker(2, "drive.google.com")
-	print(b.customDownload(list))
-	print(b.get_rtt_hops()
-)
+	# list = ["/uc?export=download&id=1qrdr2duyO7icb-XTRDJ_Qx9cZWg05jEu", "/uc?export=download&id=1iTq9a-g4G3lc56cD0WceNnS3WWq98spO", "/uc?export=download&id=1gS1Z-92XN_cVm5nU0pEJoV4JZRQwngUQ"]
+	# b = Benchmarker(2, "drive.google.com")
+	# print(b.customDownload(list))
+	# print(b.get_rtt_hops())
+
 if __name__ == '__main__':
 	main()
