@@ -136,6 +136,7 @@ class Benchmarker(object):
 		print "NOW RUNNING AMAZON TEST SUITE\n"
 		dl_speed = self.download()
 		hop_count = 0
+		print "NOW PERFORMING TRACEROUTE FOR AMAZON\n"
 		for _iter in range(self.iterations):
 			hop_count += self.get_rtt_hops()
 		hop_count = hop_count / self.iterations
@@ -146,6 +147,7 @@ class Benchmarker(object):
 		print "NOW RUNNING GOOGLE DRIVE TEST SUITE\n"
 		dl_speed = self.customDownload(Benchmarker.GOOGLE_TARGETS)
 		hop_count = 0
+		print "NOW PERFORMING TRACEROUTE FOR GOOGLE DRIVE\n"
 		for _iter in range(self.iterations):
 			hop_count += self.get_rtt_hops()
 		hop_count = hop_count / self.iterations
@@ -156,6 +158,7 @@ class Benchmarker(object):
 		print "NOW RUNNING DROPBOX TEST SUITE\n"
 		dl_speed = self.customDownload(Benchmarker.DROPBOX_TARGETS)
 		hop_count = 0
+		print "NOW PERFORMING TRACEROUTE FOR DROPBOX\n"
 		for _iter in range(self.iterations):
 			hop_count += self.get_rtt_hops()
 		hop_count = hop_count / self.iterations
@@ -179,30 +182,10 @@ def main():
 	for tup in arr:
 		key = [x[0] for x in arr]
 		val = [x[1] for x in arr]
-		print str(key) + " had CQuality factor of: " + str(val)
+		print str(key[i]) + " had CQuality factor of: " + str(val[i])
 		print "Rank: " + str(i)
 		i+=1
-	# if len(sys.argv) > 1:
-	# 	try:
-	# 		b = Benchmarker(2)
-	# 		dump = b.download()
-	# 		print(dump)
-	# 		print(b.get_rtt_hops(sys.argv[1]))
-	# 	except Exception as e:
-	# 		print(e)
-	# else:
-	# 	try:
-	# 		b = Benchmarker(3)
-	# 		dump = b.download()
-	# 		print(dump)
-	# 		print(b.get_rtt_hops())
-	# 	except Exception as e:
-	# 		print(e)
-			# 5MB                                                         20 MB                                                         50 MB
-	# list = ["/uc?export=download&id=1qrdr2duyO7icb-XTRDJ_Qx9cZWg05jEu", "/uc?export=download&id=1iTq9a-g4G3lc56cD0WceNnS3WWq98spO", "/uc?export=download&id=1gS1Z-92XN_cVm5nU0pEJoV4JZRQwngUQ"]
-	# b = Benchmarker(2, "drive.google.com")
-	# print(b.customDownload(list))
-	# print(b.get_rtt_hops())
 
+		
 if __name__ == '__main__':
 	main()
