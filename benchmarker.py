@@ -43,9 +43,6 @@ class Benchmarker(object):
 
 	def download(self):
 
-		#open connections to AWS node based on iteration count
-		# connections = [self.connect(self.host) for x in range(self.iterations)]
-
 		#init vars
 		total_dl = 0
 		start = time.time()
@@ -168,9 +165,9 @@ class Benchmarker(object):
 
 
 def main():
-	b1 = Benchmarker(1)
-	b2 = Benchmarker(1, "drive.google.com")
-	b3 = Benchmarker(1, "dropbox.com")
+	b1 = Benchmarker(int(sys.argv[1]))
+	b2 = Benchmarker(int(sys.argv[1]), "drive.google.com")
+	b3 = Benchmarker(int(sys.argv[1]), "dropbox.com")
 
 	a = b1.amazonTest()
 	g = b2.googleTest()
@@ -178,14 +175,14 @@ def main():
 
 	arr = {'Amazon': a, 'Google Drive': g, 'Dropbox': d}
 	arr = sorted(arr.items(), key=lambda x: x[1], reverse=True)
-	i=1
+	i=0
 	for tup in arr:
 		key = [x[0] for x in arr]
 		val = [x[1] for x in arr]
 		print str(key[i]) + " had CQuality factor of: " + str(val[i])
-		print "Rank: " + str(i)
+		print "Rank: " + str(i+1)
 		i+=1
 
-		
+
 if __name__ == '__main__':
 	main()
