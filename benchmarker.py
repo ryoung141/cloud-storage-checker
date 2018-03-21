@@ -88,7 +88,6 @@ class Benchmarker(object):
 		if host == None:
 			host = self.host
 		destination = socket.gethostbyname(host)
-		print(host)
 		ttl = 1
 		rtt = time.time()
 
@@ -121,8 +120,9 @@ class Benchmarker(object):
 				current_host = "*"
 			print("%d\t%s" % (ttl, current_host))
 
-			if current == destination:
+			if str(current) == str(destination):
 				rtt_end = time.time() - rtt
+				return ttl
 			if ttl >= Benchmarker.MAX_HOPS:
 				print("Max Hop count reached, terminating...")
 				print("Last hop attempted: \n" + current_host)
